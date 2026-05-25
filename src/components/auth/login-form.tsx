@@ -27,8 +27,12 @@ export function LoginForm() {
     });
 
     if (!response.ok) {
-      const data = (await response.json()) as { message?: string };
-      setError(data.message ?? "Unable to sign in.");
+      try {
+        const data = (await response.json()) as { message?: string };
+        setError(data.message ?? "Unable to sign in.");
+      } catch {
+        setError("Unable to sign in.");
+      }
       setLoading(false);
       return;
     }
