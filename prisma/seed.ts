@@ -22,7 +22,6 @@ async function main() {
         email: demoEmail,
         role: UserRole.ADMIN,
         status: "Active",
-        avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=64&h=64&fit=crop",
         passwordHash,
         lastActiveAt: subHours(new Date(), 1),
       },
@@ -60,11 +59,11 @@ async function main() {
   ]);
 
   const activitySeeds = [
-    ["Model", "Fine-tuned revenue predictor model v3.2", users[1]?.id],
-    ["Alert", "Churn rate anomaly flagged in enterprise segment", users[2]?.id],
-    ["Deploy", "Production deployment completed for metrics API", users[0]?.id],
-    ["Sync", "CRM integration synced 1,284 contacts", users[3]?.id],
-    ["Incident", "Payment webhook latency normalized", users[0]?.id],
+    ["Model", "Fine-tuned revenue predictor model v3.2", users[1].id],
+    ["Alert", "Churn rate anomaly flagged in enterprise segment", users[2].id],
+    ["Deploy", "Production deployment completed for metrics API", users[0].id],
+    ["Sync", "CRM integration synced 1,284 contacts", users[3].id],
+    ["Incident", "Payment webhook latency normalized", users[0].id],
   ] as const;
 
   await prisma.activity.createMany({
@@ -119,7 +118,8 @@ async function main() {
   });
 
   console.log("✅ Seed complete");
-  console.log(`Demo login: ${demoEmail} / ${demoPassword}`);
+  console.log(`Demo login email: ${demoEmail}`);
+  console.log("Demo password is set via DEMO_PASSWORD in your local .env file.");
 }
 
 main()

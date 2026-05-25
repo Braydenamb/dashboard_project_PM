@@ -21,6 +21,7 @@ export function UsersTable({ initialUsers }: { initialUsers: DashboardUser[] }) 
   const [users, setUsers] = useState(initialUsers);
   const [search, setSearch] = useState("");
   const [role, setRole] = useState("all");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const timeout = setTimeout(async () => {
@@ -29,8 +30,12 @@ export function UsersTable({ initialUsers }: { initialUsers: DashboardUser[] }) 
       if (role !== "all") params.set("role", role);
 
       const response = await fetch(`/api/users?${params.toString()}`);
-      if (!response.ok) return;
+      if (!response.ok) {
+        setError("Unable to load users. Please try again.");
+        return;
+      }
       const data = (await response.json()) as { users: DashboardUser[] };
+      setError(null);
       setUsers(data.users);
     }, 250);
 
@@ -70,6 +75,7 @@ export function UsersTable({ initialUsers }: { initialUsers: DashboardUser[] }) 
             ))}
           </select>
         </div>
+        {error ? <p className="mb-3 text-sm text-rose-500">{error}</p> : null}
 
         <div className="overflow-x-auto">
           <Table>

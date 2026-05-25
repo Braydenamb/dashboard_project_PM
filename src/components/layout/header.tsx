@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Bell, LogOut, Menu, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -17,9 +18,15 @@ import { Sidebar } from "@/components/layout/sidebar";
 
 export function Header({ userName }: { userName: string }) {
   const router = useRouter();
+  const [logoutError, setLogoutError] = useState<string | null>(null);
 
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
+    const response = await fetch("/api/auth/logout", { method: "POST" });
+    if (!response.ok) {
+      setLogoutError("Sign out failed. Please try again.");
+      return;
+    }
+    setLogoutError(null);
     router.push("/login");
     router.refresh();
   };
@@ -44,6 +51,7 @@ export function Header({ userName }: { userName: string }) {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
+          {logoutError ? <p className="hidden text-xs text-rose-500 sm:block">{logoutError}</p> : null}
           <Button variant="outline" size="icon" className="relative">
             <Bell className="size-4" />
             <span className="bg-primary absolute top-1.5 right-1.5 size-2 rounded-full" />

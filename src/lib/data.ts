@@ -65,7 +65,7 @@ export async function getDashboardData() {
         {
           title: "Churn Rate",
           value: `${latest.churnRate.toFixed(2)}%`,
-          change: percentDelta(previous?.churnRate ?? latest.churnRate, latest.churnRate),
+          change: percentDelta(latest.churnRate, previous?.churnRate ?? latest.churnRate),
           trend: latest.churnRate <= (previous?.churnRate ?? latest.churnRate) ? "up" : "down",
         },
         {
@@ -123,6 +123,9 @@ export async function getDashboardData() {
 }
 
 export async function getUsers(search = "", role = "all") {
+  const validRoles = new Set(["ADMIN", "ANALYST", "SUPPORT"]);
+  const normalizedRole = validRoles.has(role) ? role : "all";
+
   const users = await prisma.user.findMany({
     where: {
       AND: [
@@ -134,7 +137,9 @@ export async function getUsers(search = "", role = "all") {
               ],
             }
           : {},
-        role !== "all" ? { role: role as "ADMIN" | "ANALYST" | "SUPPORT" } : {},
+        normalizedRole !== "all"
+          ? { role: normalizedRole as "ADMIN" | "ANALYST" | "SUPPORT" }
+          : {},
       ],
     },
     orderBy: { lastActiveAt: "desc" },

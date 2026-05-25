@@ -1,13 +1,18 @@
 import bcrypt from "bcryptjs";
-import { createHmac } from "crypto";
+import { createHmac, randomBytes } from "crypto";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 
 const SESSION_COOKIE = "dashboard_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 24;
+const devAuthSecret = randomBytes(32).toString("hex");
 
 function getAuthSecret() {
-  return process.env.AUTH_SECRET ?? "local-dev-secret-change-me";
+  const secret = process.env.AUTH_SECRET;
+  if (process.env.NODE_ENV === "production" && !secret) {
+    throw new Error("AUTH_SECRET must be set in production.");
+  }
+  return secret ?? devAuthSecret;
 }
 
 function signPayload(payload: string) {

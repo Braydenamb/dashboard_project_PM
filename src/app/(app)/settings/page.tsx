@@ -10,6 +10,11 @@ import { Switch } from "@/components/ui/switch";
 export default function SettingsPage() {
   const [autoAlerts, setAutoAlerts] = useState(true);
   const [dailyDigest, setDailyDigest] = useState(false);
+  const [savedAt, setSavedAt] = useState<string | null>(null);
+
+  const onSave = () => {
+    setSavedAt(new Date().toLocaleTimeString());
+  };
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -42,7 +47,12 @@ export default function SettingsPage() {
             </div>
             <Switch checked={dailyDigest} onCheckedChange={setDailyDigest} />
           </div>
-          <Button>Save preferences</Button>
+          <div className="space-y-2">
+            <Button onClick={onSave}>Save preferences</Button>
+            {savedAt ? (
+              <p className="text-muted-foreground text-xs">Preferences saved at {savedAt}</p>
+            ) : null}
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -18,9 +18,15 @@ import { Switch } from "@/components/ui/switch";
 import { useDashboardStore } from "@/store/dashboard-store";
 import type { MetricPoint } from "@/types/dashboard";
 
+function formatYAxisValue(value: number) {
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}m`;
+  if (value >= 1_000) return `$${Math.round(value / 1_000)}k`;
+  return `$${Math.round(value)}`;
+}
+
 export function MetricsCharts({ points }: { points: MetricPoint[] }) {
   const [liveMode, setLiveMode] = useState(true);
-  const [, setTick] = useState(0);
+  const [tick, setTick] = useState(0);
   const { applyLiveSimulation, setLiveMultiplier } = useDashboardStore();
 
   useEffect(() => {
@@ -34,7 +40,7 @@ export function MetricsCharts({ points }: { points: MetricPoint[] }) {
   }, [liveMode]);
 
   const chartData = (() => {
-    const basePoints = liveMode ? applyLiveSimulation(points) : points;
+    const basePoints = liveMode ? applyLiveSimulation(points, tick) : points;
     return basePoints.map((point) => ({
       ...point,
       label: format(new Date(point.date), "MMM d"),
@@ -65,7 +71,7 @@ export function MetricsCharts({ points }: { points: MetricPoint[] }) {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
               <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-              <YAxis tickFormatter={(value) => `$${Math.round(value / 1000)}k`} width={64} />
+              <YAxis tickFormatter={(value) => formatYAxisValue(value)} width={64} />
               <Tooltip
                 formatter={(value) =>
                   typeof value === "number" ? `$${value.toLocaleString()}` : value
