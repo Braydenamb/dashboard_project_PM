@@ -1,0 +1,13 @@
+import { redirect } from "next/navigation";
+import { AppShell } from "@/components/layout/app-shell";
+import { getSessionUser } from "@/lib/auth";
+
+export default async function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+  const user = await getSessionUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  return <AppShell userName={user.name}>{children}</AppShell>;
+}
